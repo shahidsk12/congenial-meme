@@ -5,6 +5,8 @@
     "Textures": [
       "textures/texture_00.png"
     ],
+    "Physics": "",
+    "DisplayInfo": "",
     "Motions": {
       "Idle": [
         { "File": "motions/idle.motion3.json" },
@@ -15,5 +17,12 @@
         { "File": "motions/touch2.motion3.json" }
       ]
     }
-  }
+  },
+  "Groups": [
+    {
+      "Target": "Parameter",
+      "Name": "EyeBlink",
+      "Ids": ["ParamEyeLOpen", "ParamEyeROpen"]
+    }
+  ]
 }
