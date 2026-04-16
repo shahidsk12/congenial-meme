@@ -2,17 +2,21 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Live2D Girl</title>
+<title>Live2D Fix</title>
 
-<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.x/dist/browser/pixi.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.8/browser/pixi.min.js"></script>
+<script src="https://unpkg.com/pixi-live2d-display/dist/cubism4.min.js"></script>
+<script src="https://unpkg.com/pixi-live2d-display/dist/index.min.js"></script>
 
 <style>
 body {
     margin: 0;
-    overflow: hidden;
     background: black;
+}
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 </style>
 </head>
@@ -21,21 +25,25 @@ body {
 
 <script>
 const app = new PIXI.Application({
-    view: document.body,
-    resizeTo: window
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: 0x000000
 });
+
+document.body.appendChild(app.view); // 🔥 IMPORTANT FIX
 
 const modelUrl = "xch011_01.model3.json";
 
 PIXI.live2d.Live2DModel.from(modelUrl)
 .then(model => {
 
-    document.body.style.background = "green"; // ✅ DEBUG (see if it changes)
+    document.body.style.background = "green"; // debug
 
-    model.scale.set(0.35);
-    model.anchor.set(0.5, 0.5);
+    model.scale.set(0.3);
     model.x = window.innerWidth / 2;
-    model.y = window.innerHeight / 1.5;
+    model.y = window.innerHeight * 0.8;
+
+    model.anchor.set(0.5, 1);
 
     app.stage.addChild(model);
 
@@ -43,7 +51,8 @@ PIXI.live2d.Live2DModel.from(modelUrl)
 
 })
 .catch(err => {
-    document.body.style.background = "red"; // ❌ ERROR indicator
+    console.error(err);
+    document.body.style.background = "red";
 });
 </script>
 
