@@ -2,58 +2,66 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Live2D Fix</title>
+<title>Live2D xch011_01</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.8/browser/pixi.min.js"></script>
-<script src="https://unpkg.com/pixi-live2d-display/dist/cubism4.min.js"></script>
-<script src="https://unpkg.com/pixi-live2d-display/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.2/dist/browser/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js"></script>
 
 <style>
 body {
-    margin: 0;
-    background: black;
-}
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
+  margin: 0;
+  overflow: hidden;
+  background: black;
 }
 </style>
 </head>
 
 <body>
+<canvas id="canvas"></canvas>
 
 <script>
-const app = new PIXI.Application({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    backgroundColor: 0x000000
-});
+(async function () {
 
-document.body.appendChild(app.view); // 🔥 IMPORTANT FIX
+  const app = new PIXI.Application({
+    view: document.getElementById("canvas"),
+    resizeTo: window
+  });
 
-const modelUrl = "xch011_01.model3.json";
+  const model = await PIXI.live2d.Live2DModel.from(
+    "https://cdn.jsdelivr.net/gh/shahidsk12/congenial-meme@main/xch011_01.model3.json"
+  );
 
-PIXI.live2d.Live2DModel.from(modelUrl)
-.then(model => {
+  app.stage.addChild(model);
 
-    document.body.style.background = "green"; // debug
+  model.scale.set(0.35);
+  model.anchor.set(0.5, 1);
+  model.x = window.innerWidth / 2;
+  model.y = window.innerHeight;
 
-    model.scale.set(0.3);
-    model.x = window.innerWidth / 2;
-    model.y = window.innerHeight * 0.8;
+  model.motion("Idle", 0);
 
-    model.anchor.set(0.5, 1);
+  window.addEventListener("click", () => {
+    model.motion("TapBody", 0);
+  });
 
-    app.stage.addChild(model);
+  window.addEventListener("mousemove", e => {
+    let x = (e.clientX / window.innerWidth - 0.5) * 2;
+    let y = (e.clientY / window.innerHeight - 0.5) * 2;
 
-    model.motion("Idle", 0);
+    model.internalModel.coreModel.setParameterValueById("ParamAngleX", x * 30);
+    model.internalModel.coreModel.setParameterValueById("ParamAngleY", y * 30);
+  });
 
-})
-.catch(err => {
-    console.error(err);
-    document.body.style.background = "red";
-});
+  window.addEventListener("touchmove", e => {
+    let x = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
+    let y = (e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+
+    model.internalModel.coreModel.setParameterValueById("ParamAngleX", x * 30);
+    model.internalModel.coreModel.setParameterValueById("ParamAngleY", y * 30);
+  });
+
+})();
 </script>
 
 </body>
