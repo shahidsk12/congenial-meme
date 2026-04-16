@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Live2D xch011_01</title>
+<title>Live2D Debug</title>
 
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.2/dist/browser/pixi.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"></script>
@@ -11,55 +11,93 @@
 <style>
 body {
   margin: 0;
-  overflow: hidden;
   background: black;
+  color: white;
+  font-family: monospace;
 }
+#log {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 10px;
+  font-size: 14px;
+  z-index: 999;
+}
+.green { color: lime; }
+.red { color: red; }
 </style>
 </head>
 
 <body>
+
+<div id="log"></div>
 <canvas id="canvas"></canvas>
 
 <script>
+const log = document.getElementById("log");
+
+function addLog(text, ok) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  div.className = ok ? "green" : "red";
+  log.appendChild(div);
+}
+
+async function checkFile(url, name) {
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      addLog(name + " FOUND", true);
+      return true;
+    } else {
+      addLog(name + " NOT FOUND", false);
+      return false;
+    }
+  } catch {
+    addLog(name + " ERROR", false);
+    return false;
+  }
+}
+
 (async function () {
+
+  const base = "https://cdn.jsdelivr.net/gh/shahidsk12/congenial-meme@main/";
+
+  await checkFile(base + "xch011_01.model3.json", "model3.json");
+  await checkFile(base + "xch011_01.moc3", "moc3");
+  await checkFile(base + "textures/texture_00.png", "texture");
+  await checkFile(base + "motions/idle.motion3.json", "idle motion");
+  await checkFile(base + "motions/touch1.motion3.json", "touch motion");
 
   const app = new PIXI.Application({
     view: document.getElementById("canvas"),
     resizeTo: window
   });
 
-  const model = await PIXI.live2d.Live2DModel.from(
-    "https://cdn.jsdelivr.net/gh/shahidsk12/congenial-meme@main/xch011_01.model3.json"
-  );
+  try {
+    const model = await PIXI.live2d.Live2DModel.from(
+      base + "xch011_01.model3.json"
+    );
 
-  app.stage.addChild(model);
+    addLog("MODEL LOADED SUCCESS", true);
 
-  model.scale.set(0.35);
-  model.anchor.set(0.5, 1);
-  model.x = window.innerWidth / 2;
-  model.y = window.innerHeight;
+    app.stage.addChild(model);
 
-  model.motion("Idle", 0);
+    model.scale.set(0.35);
+    model.anchor.set(0.5, 1);
+    model.x = window.innerWidth / 2;
+    model.y = window.innerHeight;
 
-  window.addEventListener("click", () => {
-    model.motion("TapBody", 0);
-  });
+    model.motion("Idle", 0);
 
-  window.addEventListener("mousemove", e => {
-    let x = (e.clientX / window.innerWidth - 0.5) * 2;
-    let y = (e.clientY / window.innerHeight - 0.5) * 2;
+    window.addEventListener("click", () => {
+      model.motion("TapBody", 0);
+    });
 
-    model.internalModel.coreModel.setParameterValueById("ParamAngleX", x * 30);
-    model.internalModel.coreModel.setParameterValueById("ParamAngleY", y * 30);
-  });
-
-  window.addEventListener("touchmove", e => {
-    let x = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
-    let y = (e.touches[0].clientY / window.innerHeight - 0.5) * 2;
-
-    model.internalModel.coreModel.setParameterValueById("ParamAngleX", x * 30);
-    model.internalModel.coreModel.setParameterValueById("ParamAngleY", y * 30);
-  });
+  } catch (err) {
+    addLog("MODEL LOAD FAILED", false);
+    console.error(err);
+  }
 
 })();
 </script>
