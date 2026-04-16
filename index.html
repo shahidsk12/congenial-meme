@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,11 +5,9 @@
 <title>Live2D Girl</title>
 
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.x/dist/browser/pixi.min.js"></script>
-
-<!-- ✅ REQUIRED Live2D Core -->
 <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js"></script>
+
 <style>
 body {
     margin: 0;
@@ -33,7 +30,7 @@ const modelUrl = "xch011_01.model3.json";
 PIXI.live2d.Live2DModel.from(modelUrl)
 .then(model => {
 
-    console.log("Model loaded ✅");
+    document.body.style.background = "green"; // ✅ DEBUG (see if it changes)
 
     model.scale.set(0.35);
     model.anchor.set(0.5, 0.5);
@@ -42,30 +39,13 @@ PIXI.live2d.Live2DModel.from(modelUrl)
 
     app.stage.addChild(model);
 
-    // 👀 Look at cursor
-    window.addEventListener("mousemove", e => {
-        let x = (e.clientX / window.innerWidth - 0.5) * 2;
-        let y = (e.clientY / window.innerHeight - 0.5) * 2;
-
-        model.internalModel.coreModel.setParameterValueById("ParamAngleX", x * 30);
-        model.internalModel.coreModel.setParameterValueById("ParamAngleY", y * 30);
-        model.internalModel.coreModel.setParameterValueById("ParamBodyAngleX", x * 10);
-    });
-
-    // 🎬 Idle animation on start
     model.motion("Idle", 0);
-
-    // 👆 Click = play tap animation
-    window.addEventListener("click", () => {
-        model.motion("TapBody", 0);
-    });
 
 })
 .catch(err => {
-    console.error("ERROR ❌", err);
+    document.body.style.background = "red"; // ❌ ERROR indicator
 });
 </script>
 
-    
 </body>
 </html>
