@@ -27,7 +27,10 @@ const app = new PIXI.Application({
 
 const modelUrl = "xch011_01.model3.json";
 
-PIXI.live2d.Live2DModel.from(modelUrl).then(model => {
+PIXI.live2d.Live2DModel.from(modelUrl)
+.then(model => {
+
+    console.log("Model loaded ✅");
 
     model.scale.set(0.35);
     model.anchor.set(0.5, 0.5);
@@ -46,23 +49,20 @@ PIXI.live2d.Live2DModel.from(modelUrl).then(model => {
         model.internalModel.coreModel.setParameterValueById("ParamBodyAngleX", x * 10);
     });
 
-    // 🎲 Random animation on click
+    // 🎬 Idle animation on start
+    model.motion("Idle", 0);
+
+    // 👆 Click = play tap animation
     window.addEventListener("click", () => {
-        const motions = model.internalModel.motionManager.definitions;
-
-        let all = [];
-        for (let group in motions) {
-            motions[group].forEach(m => {
-                all.push({ group, name: m.File });
-            });
-        }
-
-        const rand = all[Math.floor(Math.random() * all.length)];
-        model.motion(rand.group, rand.name);
+        model.motion("TapBody", 0);
     });
 
+})
+.catch(err => {
+    console.error("ERROR ❌", err);
 });
 </script>
 
+    
 </body>
 </html>
